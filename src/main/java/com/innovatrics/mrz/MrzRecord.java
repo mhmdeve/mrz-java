@@ -23,6 +23,9 @@ import com.innovatrics.mrz.types.MrzDocumentCode;
 import com.innovatrics.mrz.types.MrzFormat;
 import com.innovatrics.mrz.types.MrzSex;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * An abstract MRZ record, contains basic information present in all MRZ record types.
@@ -384,12 +387,33 @@ public abstract class MrzRecord implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder(getRecordName());
-		sb.append("{");
-		buildToString(sb);
-		sb.append("}");
-		return sb.toString();
+		StringBuilder jsonBuilder = new StringBuilder();
+		jsonBuilder.append("{");
+		jsonBuilder.append("\"documentCode\": \"").append(getCode1()).append(getCode2()).append("\",");
+		jsonBuilder.append("\"issuingState\": \"").append(getIssuingCountry()).append("\",");
+		jsonBuilder.append("\"documentNumber\": \"").append(getDocumentNumber()).append("\",");
+		jsonBuilder.append("\"lastName\": \"").append(getSurname()).append("\",");
+		jsonBuilder.append("\"firstName\": \"").append(getGivenNames()).append("\",");
+		jsonBuilder.append("\"birthDate\": \"");
+		try {
+			jsonBuilder.append(convertToYYMMDD(getDateOfBirth().toString()));
+		} catch (Exception e) {
+			jsonBuilder.append("null");
+		}
+		jsonBuilder.append("\",");
+		jsonBuilder.append("\"sex\": \"").append(getSex()).append("\",");
+		jsonBuilder.append("\"expirationDate\": \"");
+		try {
+			jsonBuilder.append(convertToYYMMDD(getExpirationDate().toString()));
+		} catch (Exception e) {
+			jsonBuilder.append("null");
+		}
+		jsonBuilder.append("\",");
+		jsonBuilder.append("\"nationality\": \"").append(getNationality()).append("\"");
+		jsonBuilder.append("}");
+		return jsonBuilder.toString();
 	}
+
 
 	/**
 	 * @param sb the string builder to hold the record details
@@ -397,14 +421,41 @@ public abstract class MrzRecord implements Serializable {
 	protected void buildToString(final StringBuilder sb) {
 		sb.append("code=").append(getCode());
 		sb.append('[').append(getCode1()).append(getCode2()).append(']');
-		sb.append(", issuingCountry=").append(getIssuingCountry());
+		sb.append(", issuingState=").append(getIssuingCountry());
 		sb.append(", documentNumber=").append(getDocumentNumber());
-		sb.append(", surname=").append(getSurname());
-		sb.append(", givenNames=").append(getGivenNames());
-		sb.append(", dateOfBirth=").append(getDateOfBirth());
+		sb.append(", lastName=").append(getSurname());
+		sb.append(", firstName=").append(getGivenNames());
+		sb.append(", birthDate=").append(getDateOfBirth());
 		sb.append(", sex=").append(getSex());
 		sb.append(", expirationDate=").append(getExpirationDate());
 		sb.append(", nationality=").append(getNationality());
 	}
+
+	/**
+	 * Converts a date string in the format "{M/d/yy}" to "yymmdd" format.
+	 *
+	 * @param dateString The date string in the format "{M/d/yy}".
+	 * @return The formatted date string in "yymmdd" format.
+	 */
+	public static String convertToYYMMDD(final String dateString) {
+		try {
+			if (dateString.equals("")) {
+				return "";
+			}
+			// Remove the curly braces
+			String dateStr = dateString.substring(1, dateString.length() - 1);
+			
+			// Parse the date using the provided format
+			SimpleDateFormat sdfInput = new SimpleDateFormat("d/M/yy");
+			Date date = sdfInput.parse(dateStr);
+			
+			// Format the date to "yymmdd"
+			SimpleDateFormat sdfOutput = new SimpleDateFormat("yyMMdd");
+			return sdfOutput.format(date);
+		} catch (ParseException e) {
+			return "null";
+		}
+	}
+
 
 }

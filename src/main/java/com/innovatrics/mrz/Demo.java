@@ -18,16 +18,10 @@
  */
 package com.innovatrics.mrz;
 
-import java.awt.BorderLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-
 /**
- * Demo Swing application, demonstrates simple MRZ parsing.
+ * Demo command-line application, demonstrates simple MRZ parsing.
  *
- * @author Martin Vysny
+ * @author Martin Vysny, Muhammad Hamza Mushtaq
  */
 @SuppressWarnings("HideUtilityClassConstructor")
 public class Demo {
@@ -57,26 +51,24 @@ public class Demo {
 	 * @param args the main arguments
 	 */
 	public static void main(final String[] args) {
-		final JFrame frame = new JFrame("MRZDemo");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		final JTextArea mrz = new JTextArea(5, 44);
-		final JButton parse = new JButton("Parse");
-		parse.addActionListener(event -> {
-			final String m = mrz.getText();
-			try {
-				final MrzRecord record = MrzParser.parse(m);
-				JOptionPane.showMessageDialog(frame, "Parse successfull: " + record);
-			} catch (MrzParseException ex) {
-				JOptionPane.showMessageDialog(frame, "Parse failed: " + ex);
-				final MrzRange r = ex.getRange();
-				mrz.select(toPos(r.getColumn(), r.getRow(), m), toPos(r.getColumnTo(), r.getRow(), m));
-			} catch (Exception ex) {
-				JOptionPane.showMessageDialog(frame, "Parse failed: " + ex);
-			}
-		});
-		frame.getContentPane().add(mrz, BorderLayout.CENTER);
-		frame.getContentPane().add(parse, BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
+		if (args.length < 1) {
+			System.out.println("Usage: java Demo <MRZ data>");
+			return;
+		}
+
+		final String mrz = args[0];
+		try {
+			final MrzRecord record = MrzParser.parse(mrz);
+			System.out.println(record);
+		} catch (MrzParseException ex) {
+			System.out.println("Error");
+			final MrzRange r = ex.getRange();
+			final int startPos = toPos(r.getColumn(), r.getRow(), mrz);
+			final int endPos = toPos(r.getColumnTo(), r.getRow(), mrz);
+            System.out.println("Error at position: " + startPos + " - " + endPos);
+		} catch (Exception ex) {
+            System.out.println("Parse failed: " + ex);
+		}
 	}
+
 }

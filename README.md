@@ -2,47 +2,13 @@
 
 Machine-Readable Zone (MRZ, see http://en.wikipedia.org/wiki/Machine-readable_passport ) parser for Java, as defined by ICAO: http://www.icao.int/
 
-## Status
+## Simple usage:
 
-[![Build Status](https://github.com/BorderTech/mrz-java/actions/workflows/github-actions-build.yml/badge.svg)](https://github.com/BorderTech/mrz-java/actions/workflows/github-actions-build.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bordertech-mrz-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=bordertech-mrz-java)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=bordertech-mrz-java&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=bordertech-mrz-java)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bordertech-mrz-java&metric=coverage)](https://sonarcloud.io/dashboard?id=bordertech-mrz-java)
-[![javadoc](https://javadoc.io/badge2/com.github.bordertech.mrz/mrz-java/javadoc.svg)](https://javadoc.io/doc/com.github.bordertech.mrz/mrz-java)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.bordertech.mrz/mrz-java.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.bordertech.mrz%22%20AND%20a:%22mrz-java%22)
+* run `java -jar mrz-java-VERSION-jar-with-dependencies.jar "IDFRAPETE<<<<<<<<<<<<<<<<<<<<<952042\n0509952018746NICOLAS<<PAUL<8206152M3"`
 
-## Getting started
+* Output: {"documentCode": "ID","issuingState": "FRA","documentNumber": "050995201874","lastName": "PETE","firstName": "NICOLAS, PAUL","birthDate": "820615","sex": "MALE","expirationDate": "null","nationality": "FRA"}
 
-Add dependency:
-
-``` xml
-<project>
-  ....
-  <dependency>
-    <groupId>com.github.bordertech.mrz</groupId>
-    <artifactId>mrz-java</artifactId>
-    <version>0.8</version>
-  </dependency>
-  ....
-</project>
-```
-
-Simple usage:
-
-``` java
-try {
-  final MrzRecord record = MrzParser.parse("I<UTOSTEVENSON<<PETER<<<<<<<<<<<<<<<\nD231458907UTO3407127M9507122<<<<<<<2");
-  LOG.debug("Name: " + record.getGivenNames() + " " + record.getSurname());
-} catch (MrzParseException ex) {
-  LOG.error("Invalid MRZ.", ex);
-}
-```
-
-## Download and run demo
-
-* Download the latest `mrz-java-VERSION-jar-with-dependencies.jar` from [maven](https://repo1.maven.org/maven2/com/github/bordertech/mrz/mrz-java)
-* cd download directory
-* run `java -jar mrz-java-VERSION-jar-with-dependencies.jar`
+* Date Format: yymmdd
 
 ## Build and run demo
 
