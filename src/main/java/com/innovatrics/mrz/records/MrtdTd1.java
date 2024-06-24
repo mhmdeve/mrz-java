@@ -50,6 +50,7 @@ public class MrtdTd1 extends MrzRecordOptional {
 		super.fromMrz(mrz);
 		final MrzParser parser = new MrzParser(mrz);
 		setDocumentNumber(parser.parseString(new MrzRange(5, 14, 0)));
+		setPersonalNumberID(parser.parseString(new MrzRange(15, 24, 0)));
 		setValidDocumentNumber(parser.checkDigit(14, 0, new MrzRange(5, 14, 0), "document number"));
 		setOptional(parser.parseString(new MrzRange(15, 30, 0)));
 		setDateOfBirth(parser.parseDate(new MrzRange(0, 6, 1)));
@@ -77,6 +78,7 @@ public class MrtdTd1 extends MrzRecordOptional {
 		final String dob = getDateOfBirth().toMrz() + MrzParser.computeCheckDigitChar(getDateOfBirth().toMrz());
 		sb.append(dob);
 		sb.append(getSex().getMrz());
+		sb.append(getPersonalNumberID());
 		final String ed = getExpirationDate().toMrz() + MrzParser.computeCheckDigitChar(getExpirationDate().toMrz());
 		sb.append(ed);
 		sb.append(MrzParser.toMrz(getNationality(), 3));

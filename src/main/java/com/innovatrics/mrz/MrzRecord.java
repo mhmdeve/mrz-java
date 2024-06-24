@@ -86,6 +86,10 @@ public abstract class MrzRecord implements Serializable {
 	 */
 	private String documentNumber;
 	/**
+	 * Document number, e.g. passport number.
+	 */
+	private String personalNumberID;
+	/**
 	 * The surname in uppercase.
 	 */
 	private String surname;
@@ -243,6 +247,20 @@ public abstract class MrzRecord implements Serializable {
 	 */
 	public void setDocumentNumber(final String documentNumber) {
 		this.documentNumber = documentNumber;
+	}
+
+	/**
+	 * @param personalNumberID the document number
+	 */
+	public void setPersonalNumberID(final String personalNumberID) {
+		this.personalNumberID = personalNumberID;
+	}
+
+	/**
+	 * @return the personal number
+	 */
+	public String getPersonalNumberID() {
+		return personalNumberID;
 	}
 
 	/**
@@ -409,9 +427,17 @@ public abstract class MrzRecord implements Serializable {
 			jsonBuilder.append("null");
 		}
 		jsonBuilder.append("\",");
-		jsonBuilder.append("\"nationality\": \"").append(getNationality()).append("\"");
+		jsonBuilder.append("\"nationality\": \"").append(getNationality()).append("\",");
+
+		// Adding the new fields
+		jsonBuilder.append("\"personalNumber\": \"").append(getPersonalNumberID()).append("\",");
+		jsonBuilder.append("\"validComposite\": \"").append(isValidComposite()).append("\",");
+		jsonBuilder.append("\"validDocumentNumber\": \"").append(isValidDocumentNumber()).append("\",");
+		jsonBuilder.append("\"validDateOfBirth\": \"").append(isValidDateOfBirth()).append("\",");
+		jsonBuilder.append("\"validExpirationDate\": \"").append(isValidExpirationDate()).append("\"");
+
 		jsonBuilder.append("}");
-		return jsonBuilder.toString();
+    	return jsonBuilder.toString();
 	}
 
 
