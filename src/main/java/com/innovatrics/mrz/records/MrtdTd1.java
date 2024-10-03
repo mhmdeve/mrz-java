@@ -49,6 +49,7 @@ public class MrtdTd1 extends MrzRecordOptional {
 	@Override
 	public void fromMrz(final String mrz) throws MrzParseException {
 		super.fromMrz(mrz);
+		setMrz(mrz);
 		if (mrz.startsWith("I<PRT")) {
 			final MrzParser parser = new MrzParser(mrz);
 			setDocumentNumber(replaceNumberChar(parser.parseString(new MrzRange(5, 18, 0))));

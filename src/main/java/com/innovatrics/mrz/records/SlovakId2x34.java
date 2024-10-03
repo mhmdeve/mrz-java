@@ -43,6 +43,7 @@ public class SlovakId2x34 extends MrzRecordOptional {
 	@Override
 	public void fromMrz(final String mrz) throws MrzParseException {
 		super.fromMrz(mrz);
+		setMrz(mrz);
 		final MrzParser parser = new MrzParser(mrz);
 		setName(parser.parseName(new MrzRange(5, 34, 0)));
 		setDocumentNumber(parser.parseString(new MrzRange(0, 9, 1)));

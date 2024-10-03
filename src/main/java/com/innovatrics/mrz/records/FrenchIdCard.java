@@ -51,6 +51,7 @@ public class FrenchIdCard extends MrzRecordOptional {
 	@Override
 	public void fromMrz(final String mrz) throws MrzParseException {
 		super.fromMrz(mrz);
+		setMrz(mrz);
 		final MrzParser parser = new MrzParser(mrz);
 		//Special because surname and firstname not on the same line
 		String[] name = new String[]{"", ""};

@@ -464,23 +464,35 @@ public abstract class MrzRecord implements Serializable {
 	 * @return The formatted date string in "yymmdd" format.
 	 */
 	public static String convertToYYMMDD(final String dateString) {
-		try {
-			if (dateString.equals("")) {
-				return "";
-			}
-			// Remove the curly braces
-			String dateStr = dateString.substring(1, dateString.length() - 1);
-			
-			// Parse the date using the provided format
-			SimpleDateFormat sdfInput = new SimpleDateFormat("d/M/yy");
-			Date date = sdfInput.parse(dateStr);
-			
-			// Format the date to "yymmdd"
-			SimpleDateFormat sdfOutput = new SimpleDateFormat("yyMMdd");
-			return sdfOutput.format(date);
-		} catch (ParseException e) {
-			return "null";
-		}
+        try {
+            if (dateString.equals("")) {
+                return "null";
+            }
+            // Remove the curly braces
+            String dateStr = dateString.substring(1, dateString.length() - 1);
+            
+            // Pad the year part if it is a single digit "0"
+            String[] parts = dateStr.split("/");
+            if (parts.length == 3) {
+                String yearPart = parts[2];
+                // Check if year is "0" and pad it with an extra zero
+                if (yearPart.equals("0")) {
+                    parts[2] = "00"; // Change from "0" to "00"
+                }
+                // Reconstruct the date string
+                dateStr = String.join("/", parts);
+            }
+            
+            // Parse the date using the provided format
+            SimpleDateFormat sdfInput = new SimpleDateFormat("d/M/yy");
+            Date date = sdfInput.parse(dateStr);
+            
+            // Format the date to "yymmdd"
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("yyMMdd");
+            return sdfOutput.format(date);
+        } catch (ParseException e) {
+            return "null";
+        }
 	}
 
 

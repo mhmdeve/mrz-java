@@ -66,7 +66,11 @@ public enum MrzDocumentCode {
 	 */
 	public static MrzDocumentCode parse(final String mrz) throws MrzParseException {
 		final String code = mrz.substring(0, 2);
-
+		final String code3 = mrz.substring(0, 5);
+		if (code3 == "ITACA") {
+            return TYPE_I;
+        }
+		
 		// 2-letter checks
 		switch (code) {
 			case "IV":

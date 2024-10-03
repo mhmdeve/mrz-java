@@ -47,6 +47,7 @@ public class MrvA extends MrzRecordOptional {
 	@Override
 	public void fromMrz(final String mrz) throws MrzParseException {
 		super.fromMrz(mrz);
+		setMrz(mrz);
 		final MrzParser parser = new MrzParser(mrz);
 		setName(parser.parseName(new MrzRange(5, 44, 0)));
 		setDocumentNumber(parser.parseString(new MrzRange(0, 9, 1)));
