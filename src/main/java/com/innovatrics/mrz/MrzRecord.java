@@ -105,6 +105,12 @@ public abstract class MrzRecord implements Serializable {
 	 * Sex.
 	 */
 	private MrzSex sex;
+
+	/**
+	 * Mrz String.
+	 */
+	private String mrzString;
+
 	/**
 	 * Expiration date of passport.
 	 */
@@ -159,6 +165,7 @@ public abstract class MrzRecord implements Serializable {
 		setCode(MrzDocumentCode.parse(mrz));
 		setCode1(mrz.charAt(0));
 		setCode2(mrz.charAt(1));
+		setMrz(mrz);
 		setIssuingCountry(new MrzParser(mrz).parseString(new MrzRange(2, 5, 0)));
 	}
 
@@ -213,6 +220,20 @@ public abstract class MrzRecord implements Serializable {
 	public char getCode2() {
 		return code2;
 	}
+
+	/**
+	 * @param mrzString the document mrzString
+	 */
+    public void setMrz(String mrzString) {
+        this.mrzString = mrzString;
+    }
+
+	/**
+	 * @return the document mrzString
+	 */
+    public String getMrz() {
+        return this.mrzString.replace("\n", "_");
+    }
 
 	/**
 	 * @param code2 the document code2
@@ -408,10 +429,12 @@ public abstract class MrzRecord implements Serializable {
 		StringBuilder jsonBuilder = new StringBuilder();
 		jsonBuilder.append("{");
 		jsonBuilder.append("\"documentCode\": \"").append(getCode1()).append(getCode2()).append("\",");
+		jsonBuilder.append("\"documentType\": \"").append(getCode()).append("\",");
 		jsonBuilder.append("\"issuingState\": \"").append(getIssuingCountry()).append("\",");
 		jsonBuilder.append("\"documentNumber\": \"").append(getDocumentNumber()).append("\",");
 		jsonBuilder.append("\"lastName\": \"").append(getSurname()).append("\",");
 		jsonBuilder.append("\"firstName\": \"").append(getGivenNames()).append("\",");
+        jsonBuilder.append("\"mrzString\": \"").append(getMrz()).append("\",");
 		jsonBuilder.append("\"birthDate\": \"");
 		try {
 			jsonBuilder.append(convertToYYMMDD(getDateOfBirth().toString()));

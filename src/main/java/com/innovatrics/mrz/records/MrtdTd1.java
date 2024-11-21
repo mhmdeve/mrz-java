@@ -65,6 +65,21 @@ public class MrtdTd1 extends MrzRecordOptional {
 			setOptional2(parser.parseString(new MrzRange(18, 29, 1)));
 			setValidComposite(parser.checkDigit(29, 1, parser.rawValue(new MrzRange(5, 30, 0), new MrzRange(0, 7, 1), new MrzRange(8, 15, 1), new MrzRange(18, 29, 1)), "mrz"));
 			setName(parser.parseName(new MrzRange(0, 30, 2)));
+		} else if (mrz.startsWith("IDFRA")) {
+			final MrzParser parser = new MrzParser(mrz);
+			setDocumentNumber(parser.parseString(new MrzRange(5, 14, 0)));
+			setPersonalNumberID(parser.parseString(new MrzRange(15, 24, 0)));
+			setValidDocumentNumber(isValidFrenchIDNumber(parser.parseString(new MrzRange(5, 14, 0))));
+			setOptional(parser.parseString(new MrzRange(15, 30, 0)));
+			setDateOfBirth(parser.parseDate(new MrzRange(0, 6, 1)));
+			setValidDateOfBirth(parser.checkDigit(6, 1, new MrzRange(0, 6, 1), "date of birth") && getDateOfBirth().isDateValid());
+			setSex(parser.parseSex(7, 1));
+			setExpirationDate(parser.parseDate(new MrzRange(8, 14, 1)));
+			setValidExpirationDate(parser.checkDigit(14, 1, new MrzRange(8, 14, 1), "expiration date") && getExpirationDate().isDateValid());
+			setNationality(parser.parseString(new MrzRange(15, 18, 1)));
+			setOptional2(parser.parseString(new MrzRange(18, 29, 1)));
+			setValidComposite(parser.checkDigit(29, 1, parser.rawValue(new MrzRange(5, 30, 0), new MrzRange(0, 7, 1), new MrzRange(8, 15, 1), new MrzRange(18, 29, 1)), "mrz"));
+			setName(parser.parseName(new MrzRange(0, 30, 2)));
 		} else {
 			final MrzParser parser = new MrzParser(mrz);
 			setDocumentNumber(parser.parseString(new MrzRange(5, 14, 0)));
@@ -84,22 +99,8 @@ public class MrtdTd1 extends MrzRecordOptional {
 	}
 
 	/**
-	 * Replaces ambiguous characters in the given input with numeric equivalents.
-	 * <p>
-	 * This method replaces specific characters in the input string with their corresponding numeric values:
-	 * <ul>
-	 * <li>'O' is replaced with '0'</li>
-	 * <li>'I' is replaced with '1'</li>
-	 * <li>'B' is replaced with '8'</li>
-	 * <li>'S' is replaced with '5'</li>
-	 * <li>'J' is replaced with '3'</li>
-	 * <li>'Z' is replaced with '2'</li>
-	 * </ul>
-	 * Characters at positions 10 and 11 (0-based index) are left unchanged, and '<' and space characters are removed.
-	 * </p>
-	 * 
 	 * @param input The input string containing potentially ambiguous characters.
-	 * @return A string where ambiguous characters are replaced with numeric values, and '<' and spaces are removed.
+	 * @return A string where ambiguous characters are replaced with numeric values.
 	 */
 	public static String replaceNumberChar(final String input) {
 		if (input == null) {
@@ -149,17 +150,55 @@ public class MrtdTd1 extends MrzRecordOptional {
 		return result.toString().replace(" ", "");
 	}
 
+
+	public static boolean isValidFrenchIDNumber(String documentNumber) {
+		// Trim the input to remove leading/trailing whitespace
+		String trimmedDocNum = documentNumber.trim();
+
+		// Ensure the document number is exactly 9 characters
+		if (trimmedDocNum.length() != 9) {
+			return false;
+		}
+
+		// Validate format: first 8 characters must be alphanumeric, 9th is a digit
+		String pattern = "^[A-Z0-9]{8}[0-9]$";
+		if (!trimmedDocNum.matches(pattern)) {
+			return false;
+		}
+
+		// Calculate and validate the check digit
+		return isValidCheckDigit(trimmedDocNum);
+	}
+
+	private static boolean isValidCheckDigit(String documentNumber) {
+		// Weights for MRZ calculation
+		int[] weights = {7, 3, 1, 7, 3, 1, 7, 3};
+
+		// Map MRZ characters to numerical values
+		String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		int checkSum = 0;
+
+		// Calculate weighted sum for the first 8 characters
+		for (int i = 0; i < 8; i++) {
+			char c = documentNumber.charAt(i);
+			int value = chars.indexOf(c); // Get numeric value of the character
+			if (value == -1) {
+				return false; // Invalid character
+			}
+			checkSum += value * weights[i];
+		}
+
+		int computedCheckDigit = checkSum % 10;
+
+		// Check if the computed check digit is 0
+		if (computedCheckDigit == 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
-	 * Validates a Portuguese ID number against a predefined format.
-	 * <p>
-	 * This method checks if the provided document number matches the expected format for Portuguese ID numbers.
-	 * The format is defined by the following regular expression:
-	 * <pre>
-	 * ^[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{1}[A-Za-z]{2}[0-9]{1}$
-	 * </pre>
-	 * The input is trimmed of any leading or trailing whitespace before validation.
-	 * </p>
-	 * 
 	 * @param documentNumber The Portuguese ID number to be validated.
 	 * @return {@code true} if the document number matches the expected format, {@code false} otherwise.
 	 */
@@ -178,7 +217,6 @@ public class MrtdTd1 extends MrzRecordOptional {
 
 		return compiledPattern.matcher(trimmedDocumentNumber).matches();
 	}
-
 
 	@Override
 	public String toMrz() {
